@@ -10,7 +10,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"strings"
+	"time"
 )
 
 //go:embed index.tmpl.html
@@ -55,6 +58,8 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 		photoURLs = append(photoURLs, "/photos/"+file.Name())
 	}
 
+	sort.Strings(photoURLs)
+
 	data := struct {
 		Photos []string
 	}{
@@ -98,7 +103,9 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	file, err := ioutil.TempFile("db/", "upload-*"+ext)
+	unixTime := strconv.FormatInt(time.Now().Unix(), 10)
+
+	file, err := ioutil.TempFile("db/", "upload-"+unixTime+"-*"+ext)
 	if err != nil {
 		http.Error(w, "internal error storing file: "+err.Error(), 500)
 		return
