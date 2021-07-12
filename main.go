@@ -59,6 +59,7 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	sort.Strings(photoURLs)
+	sort.Sort(sort.Reverse(sort.StringSlice(photoURLs)))
 
 	data := struct {
 		Photos []string
