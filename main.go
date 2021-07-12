@@ -82,7 +82,7 @@ func photoHandler(w http.ResponseWriter, req *http.Request) {
 func uploadHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Println("upload endpoint hit by", req.RemoteAddr)
 
-	req.ParseMultipartForm(25 << 20) // 25mb file limit
+	req.ParseMultipartForm(10 << 20) // 10mb file limit
 
 	photo, handler, err := req.FormFile("photo")
 	if err != nil {
