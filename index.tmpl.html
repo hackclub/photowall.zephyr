@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Zephyr Photo Wall</title>
+    </head>
+    <body>
+        <h1>Zephyr Photo Wall</h1>
+        <form
+            enctype="multipart/form-data"
+            action="/upload"
+            method="post"
+        >
+            <input type="file" name="photo" />
+            <input type="submit" value="upload" />
+        </form>
+
+        <h2>Uploaded Photos</h2>
+
+        {{range .Photos}}
+            <img src="{{.}}">
+        {{else}}
+            <div><strong>No photos uploaded yet.</strong></div>
+        {{end}}
+    </body>
+</html>
