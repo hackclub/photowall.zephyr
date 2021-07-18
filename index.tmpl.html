@@ -2,41 +2,48 @@
 <html>
     <head>
         <title>Zephyr Photo Wall</title>
-        <meta name="viewport" content="width=525, initial-scale=0.86">
+        <link rel="stylesheet" href="/static/watercss.dark.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-html, body {
-    background-color: #f8f8f8;
-    color: #0c0c0c;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
+            .grid {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
 
-.container {
-    max-width: 1025px;
-    margin-left: auto;
-    margin-right: auto;
-}
+            article a div {
+                border-radius: 10px;
+                height: 250px;
+                width: 250px;
+                background-size: cover;
+                display: block;
+            }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>Zephyr Photo Wall</h1>
-            <form
-                enctype="multipart/form-data"
-                action="/upload"
-                method="post"
-            >
-                <input type="file" name="photo" />
-                <input type="submit" value="upload" />
-            </form>
+        <h1>Zephyr Photo Wall</h1>
+        <form
+            enctype="multipart/form-data"
+            action="/upload"
+            method="post"
+        >
+            <input type="file" name="photo" />
+            <input type="submit" value="upload" />
+        </form>
 
-            <h2>Uploaded Photos</h2>
+        <h2>Uploaded Photos</h2>
 
+        <div class="grid">
             {{range .Photos}}
-                <a target="_blank" href="{{ . }}"><div style="width: 250px; height: 250px; background-image: url('{{ . }}'); background-size: cover; display: inline-block;"></div></a>
-            {{else}}
-                <div><strong>No photos uploaded yet.</strong></div>
+                <article>
+                    <a target="_blank" href="{{ . }}">
+                        <div style="background-image: url('{{ . }}');"></div>
+                    </a>
+                </article>
             {{end}}
-            <p>~ built by zrl for the hacker zephyr ~</p>
         </div>
+
+        <p>~ built by zrl, kognise, and arc for the hacker zephyr ~</p>
     </body>
 </html>
