@@ -32,7 +32,7 @@ html, body {
             <h2>Uploaded Photos</h2>
 
             {{range .Photos}}
-                <div style="width: 250px; height: 250px; background-image: url('{{ . }}'); background-size: cover; display: inline-block;"></div>
+                <a target="_blank" href="{{ . }}"><div style="width: 250px; height: 250px; background-image: url('{{ . }}'); background-size: cover; display: inline-block;"></div></a>
             {{else}}
                 <div><strong>No photos uploaded yet.</strong></div>
             {{end}}
