@@ -20,7 +20,6 @@ import (
 var indexTmplRaw string
 var indexTmpl *template.Template
 
-// magic new code by arc and kognise
 func main() {
 	// Support for auto-deploy .zephyr stuff
 	port := os.Getenv("PORT")
