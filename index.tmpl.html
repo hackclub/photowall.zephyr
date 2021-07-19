@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Zephyr Photo Wall</title>
-        <meta name="viewport" content="width=525, initial-scale=0.86">
-        <style>
-html, body {
-    background-color: #f8f8f8;
-    color: #0c0c0c;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
 
-.container {
-    max-width: 1025px;
-    margin-left: auto;
-    margin-right: auto;
-}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Zephyr Photo Wall</h1>
-            <form
-                enctype="multipart/form-data"
-                action="/upload"
-                method="post"
-            >
-                <input type="file" name="photo" />
-                <input type="submit" value="upload" />
-            </form>
+<head>
+    <title>Zephyr Photo Wall</title>
+    <link rel="stylesheet" href="/static/watercss.dark.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A place for memories to be stored until the day the zephyrnet harddrives rust.">
+    <style>
+        .grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
 
-            <h2>Uploaded Photos</h2>
+        article a div {
+            border-radius: 10px;
+            height: 250px;
+            width: 250px;
+            background-size: cover;
+            display: block;
+        }
+    </style>
+</head>
 
-            {{range .Photos}}
-                <div style="width: 250px; height: 250px; background-image: url('{{ . }}'); background-size: cover; display: inline-block;"></div>
-            {{else}}
-                <div><strong>No photos uploaded yet.</strong></div>
-            {{end}}
-            <p>~ built by zrl for the hacker zephyr ~</p>
-        </div>
-    </body>
+<body>
+    <h1>Zephyr Photo Wall</h1>
+    <form enctype="multipart/form-data" action="/upload" method="post">
+        <input type="file" name="photo" />
+        <input type="submit" value="upload" />
+    </form>
+
+    <h2>Uploaded Photos</h2>
+
+    <div class="grid">
+        {{range .Photos}}
+        <article>
+            <a target="_blank" href="{{ . }}">
+                <div style="background-image: url('{{ . }}');"></div>
+            </a>
+        </article>
+        {{end}}
+    </div>
+
+    <p>~ built by zrl, kognise, and arc for the hacker zephyr ~</p>
+</body>
+
 </html>

@@ -21,6 +21,7 @@ var indexTmplRaw string
 var indexTmpl *template.Template
 
 func main() {
+	// Support for auto-deploy .zephyr stuff
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "9876"
@@ -32,8 +33,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// HTTP Request handlers
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/photos/", photoHandler)
+	http.HandleFunc("/static/", staticHandler)
 	http.HandleFunc("/upload", uploadHandler)
 
 	fmt.Println("Listening on port", port)
@@ -77,7 +80,7 @@ func photoHandler(w http.ResponseWriter, req *http.Request) {
 
 	file, err := os.Open("./db/" + fileName)
 	if err != nil {
-		http.Error(w, "error opening photo: "+err.Error(), 422)
+		http.Error(w, "error opening photo: "+err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 	defer file.Close()
@@ -85,22 +88,39 @@ func photoHandler(w http.ResponseWriter, req *http.Request) {
 	io.Copy(w, file)
 }
 
+func staticHandler(w http.ResponseWriter, req *http.Request) {
+	fileName := strings.Replace(req.URL.Path, "/static/", "", 1)
+
+	file, err := os.Open("./static/" + fileName)
+	if err != nil {
+		http.Error(w, "error opening photo: "+err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+	defer file.Close()
+
+	w.Header().Set("Content-Type", "text/css")
+	io.Copy(w, file)
+}
+
+// Handler for uploads
 func uploadHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Println("upload endpoint hit by", req.RemoteAddr)
 
 	req.ParseMultipartForm(10 << 20) // 10mb file limit
 
+	// Recieved data from the html upload form
 	photo, handler, err := req.FormFile("photo")
 	if err != nil {
-		http.Error(w, "error receiving uploaded photo: "+err.Error(), 422)
+		http.Error(w, "error receiving uploaded photo: "+err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 	defer photo.Close()
 
+	// Verify that it is, in fact, a photo
 	ext := strings.ToLower(filepath.Ext(handler.Filename))
 
 	if ext != ".png" && ext != ".jpeg" && ext != ".jpg" {
-		http.Error(w, "must be a png or jpeg", 422)
+		http.Error(w, "must be a png or jpeg", http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -115,5 +135,5 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 
 	io.Copy(file, photo)
 
-	http.Redirect(w, req, "/", 302)
+	http.Redirect(w, req, "/", http.StatusFound)
 }
