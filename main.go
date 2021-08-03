@@ -14,6 +14,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"image"
+	"image/draw"
+	"image/math/f64"
+	"image/jpeg"
 )
 
 //go:embed index.tmpl.html
@@ -126,7 +131,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 
 	unixTime := strconv.FormatInt(time.Now().Unix(), 10)
 
-	file, err := ioutil.TempFile("db/", "upload-"+unixTime+"-*"+ext)
+	file, err := os.Open("db/upload-"+unixTime+ext)
 	if err != nil {
 		http.Error(w, "internal error storing file: "+err.Error(), 500)
 		return
@@ -134,6 +139,28 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 	defer file.Close()
 
 	io.Copy(file, photo)
+
+	// resize image and store smaller size
+
+	compressedFile, err := os.Open("db/upload-"+unixTime+"_compressed"+ext)
+	if err != nil {
+		http.Error(w, "internal error storing file: "+err.Error(), 500)
+		return
+	}
+	defer compressedFile.Close()
+
+	src, _, err := image.Decode(photo)
+	if err != nil {
+		http.Error(w, "internal error resizing photo: "+err.Error(), 500)
+	}
+
+	scalingFactor := src.Bounds().Max.X / 512
+
+	dst := image.NewRGBA(image.Rect(0, 0, 512, src.Bounds().Max.Y * scalingFactor))
+
+	draw.ApproxBiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
+
+	jpeg.Encode(compressedFile, dst)
 
 	http.Redirect(w, req, "/", http.StatusFound)
 }
